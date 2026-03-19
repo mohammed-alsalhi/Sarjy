@@ -1,0 +1,12 @@
+{
+  "name": "Sarjy",
+  "short_name": "Sarjy",
+  "description": "Your personal AI voice assistant",
+  "theme_color": "#0a0e1a",
+  "background_color": "#0a0e1a",
+  "display": "standalone",
+  "start_url": "/",
+  "icons": [
+    { "src": "/favicon.ico", "sizes": "any", "type": "image/x-icon" }
+  ]
+}
