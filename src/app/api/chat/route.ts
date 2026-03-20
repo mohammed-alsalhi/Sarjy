@@ -185,7 +185,12 @@ async function executeTool(
     const res = await fetch(url.toString(), {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
-    if (!res.ok) return "Could not fetch calendar events. Your session may need to be refreshed.";
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}));
+      const reason = errBody?.error?.message ?? errBody?.error ?? res.statusText ?? res.status;
+      console.error("[calendar] Google API error:", res.status, JSON.stringify(errBody));
+      return `Calendar error (${res.status}): ${reason}`;
+    }
     const data = await res.json();
     const items: Array<{ summary?: string; start?: { dateTime?: string; date?: string } }> = data.items ?? [];
     if (items.length === 0) return "No events found for that period.";
