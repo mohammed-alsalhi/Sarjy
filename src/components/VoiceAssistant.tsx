@@ -50,7 +50,7 @@ export function VoiceAssistant() {
   );
 
   return (
-    <div className="relative flex h-screen flex-col overflow-hidden bg-[#fafafa]">
+    <div className="relative flex h-screen flex-col overflow-hidden bg-background">
       {/* Subtle grid */}
       <div
         className="pointer-events-none absolute inset-0"
@@ -80,7 +80,7 @@ export function VoiceAssistant() {
 
           {/* Image preview strip */}
           {pendingImage && (
-            <div className="mb-2 flex items-center gap-2 rounded-lg border border-[#593aa7]/20 bg-white px-3 py-2 shadow-sm">
+            <div className="mb-2 flex items-center gap-2 rounded-lg border border-[#593aa7]/20 bg-card px-3 py-2 shadow-sm">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={pendingImage.dataUrl}
@@ -90,7 +90,7 @@ export function VoiceAssistant() {
               <span className="text-xs text-muted-foreground">Image ready — speak your question</span>
               <button
                 onClick={() => setPendingImage(null)}
-                className="ml-auto rounded p-0.5 hover:bg-[#ededed] transition-colors"
+                className="ml-auto rounded p-0.5 hover:bg-secondary transition-colors"
                 aria-label="Remove image"
               >
                 <X className="h-3.5 w-3.5 text-muted-foreground" />
@@ -113,7 +113,7 @@ export function VoiceAssistant() {
               {/* Image upload button */}
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white shadow-sm transition-all hover:border-[#593aa7]/40 hover:shadow-md focus:outline-none"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card shadow-sm transition-all hover:border-[#593aa7]/40 hover:shadow-md focus:outline-none"
                 title="Attach image"
               >
                 <ImagePlus className="h-4 w-4 text-muted-foreground" />

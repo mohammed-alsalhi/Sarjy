@@ -2,7 +2,8 @@
 
 import { signOut } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Brain, LogOut } from "lucide-react";
+import { Brain, LogOut, Sun, Moon } from "lucide-react";
+import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/cn";
@@ -55,9 +56,11 @@ function StateDot({ state }: { state: AssistantState }) {
 }
 
 export function StatusBar({ state, userName, userImage, memoryOpen, onToggleMemory, language, memoryCount }: StatusBarProps) {
+  const { resolvedTheme, setTheme } = useTheme();
+
   return (
     <TooltipProvider delayDuration={300}>
-      <header className="relative flex h-14 items-center justify-between border-b border-border bg-white px-5">
+      <header className="relative flex h-14 items-center justify-between border-b border-border bg-background px-5">
         {/* Logo */}
         <span className="font-display text-lg font-semibold tracking-tight text-foreground">
           sarjy
@@ -87,6 +90,15 @@ export function StatusBar({ state, userName, userImage, memoryOpen, onToggleMemo
 
         {/* Right controls */}
         <div className="flex items-center gap-1">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon" onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}>
+                {resolvedTheme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{resolvedTheme === "dark" ? "Light mode" : "Dark mode"}</TooltipContent>
+          </Tooltip>
+
           <Tooltip>
             <TooltipTrigger asChild>
               <Button

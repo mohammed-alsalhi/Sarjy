@@ -82,7 +82,7 @@ export function SignInCard() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        className="relative z-10 flex flex-col items-center gap-6 rounded-lg border border-border bg-white px-10 py-12 shadow-sm"
+        className="relative z-10 flex flex-col items-center gap-6 rounded-lg border border-border bg-card px-10 py-12 shadow-sm"
         style={{ minWidth: 360, width: 360 }}
       >
         {/* Logo */}

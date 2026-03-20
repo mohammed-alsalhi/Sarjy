@@ -109,7 +109,7 @@ export function VoiceOrb({ state, onStartListening, onStopListening, analyserRef
         <motion.button
           onClick={handleClick}
           className={cn(
-            "relative z-10 flex items-center justify-center rounded-full border bg-white transition-all focus:outline-none",
+            "relative z-10 flex items-center justify-center rounded-full border bg-card transition-all focus:outline-none",
             "border-border shadow-sm",
             isActive && "border-[#593aa7]/40 shadow-md",
             isError && "border-red-300 bg-red-50/40"

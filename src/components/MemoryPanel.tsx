@@ -68,7 +68,7 @@ export function MemoryPanel({ open, onClose, refreshKey = 0, onCountChange }: Me
           animate={{ x: 0 }}
           exit={{ x: "100%" }}
           transition={{ type: "spring", stiffness: 320, damping: 32 }}
-          className="absolute right-0 top-0 z-20 flex h-full w-72 flex-col border-l border-border bg-white shadow-sm"
+          className="absolute right-0 top-0 z-20 flex h-full w-72 flex-col border-l border-border bg-background shadow-sm"
         >
           <div className="flex items-center justify-between border-b border-border px-4 py-3">
             <div className="flex items-center gap-2">
