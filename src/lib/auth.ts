@@ -40,7 +40,7 @@ export const authOptions: NextAuthOptions = {
         const db = createServerSupabase();
         const { data: user } = await db
           .from("credential_users")
-          .select("*")
+          .select("id, email, name, password_hash")
           .eq("email", credentials.email.toLowerCase())
           .single();
 
