@@ -1,6 +1,24 @@
 export type Database = {
   public: {
     Tables: {
+      credential_users: {
+        Row: {
+          id: string;
+          email: string;
+          name: string | null;
+          password_hash: string;
+          created_at: string;
+        };
+        Insert: {
+          email: string;
+          name?: string | null;
+          password_hash: string;
+        };
+        Update: {
+          name?: string | null;
+          password_hash?: string;
+        };
+      };
       memory_facts: {
         Row: {
           id: string;

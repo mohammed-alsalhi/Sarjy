@@ -76,7 +76,15 @@ export function useVoiceAssistant({ onMemoryUpdate }: UseVoiceAssistantOptions =
 
   const { enqueue, stop, analyser } = useAudioPlayer({
     onStart: () => setState("speaking"),
-    onComplete: () => setState("idle"),
+    onComplete: () => {
+      setState("idle");
+      // Auto-restart listening after TTS finishes
+      activeRef.current = true;
+      getVAD().then((vad) => {
+        vad.start();
+        setState("listening");
+      });
+    },
   });
 
   // Barge-in: stop audio when user starts speaking mid-response

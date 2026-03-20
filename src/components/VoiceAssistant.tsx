@@ -97,7 +97,7 @@ export function VoiceAssistant() {
           )}
 
           {/* Orb + image button row */}
-          <div className="flex shrink-0 items-center justify-center gap-4 pb-10 pt-4">
+          <div className="flex shrink-0 flex-col items-center pb-10 pt-4">
             {/* Hidden file input */}
             <input
               ref={fileInputRef}
@@ -107,24 +107,35 @@ export function VoiceAssistant() {
               onChange={handleFileChange}
             />
 
-            {/* Image upload button */}
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white shadow-sm transition-all hover:border-[#593aa7]/40 hover:shadow-md focus:outline-none"
-              title="Attach image"
-            >
-              <ImagePlus className="h-4 w-4 text-muted-foreground" />
-            </button>
+            <div className="flex items-center justify-center gap-4">
+              {/* Image upload button */}
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white shadow-sm transition-all hover:border-[#593aa7]/40 hover:shadow-md focus:outline-none"
+                title="Attach image"
+              >
+                <ImagePlus className="h-4 w-4 text-muted-foreground" />
+              </button>
 
-            <VoiceOrb
-              state={state}
-              onStartListening={startListening}
-              onStopListening={stopListening}
-              analyserRef={analyserRef}
-            />
+              <VoiceOrb
+                state={state}
+                onStartListening={startListening}
+                onStopListening={stopListening}
+                analyserRef={analyserRef}
+              />
 
-            {/* Spacer to keep orb centred */}
-            <div className="h-10 w-10" />
+              {/* Spacer to keep orb centred */}
+              <div className="h-10 w-10" />
+            </div>
+
+            {/* Status label — below the orb, outside the alignment row */}
+            <span className="mt-3 text-xs text-muted-foreground tracking-wide uppercase font-medium">
+              {state === "idle" && "Tap to speak"}
+              {state === "listening" && "Listening…"}
+              {state === "thinking" && "Thinking…"}
+              {state === "speaking" && "Speaking…"}
+              {state === "error" && "Error"}
+            </span>
           </div>
         </div>
 

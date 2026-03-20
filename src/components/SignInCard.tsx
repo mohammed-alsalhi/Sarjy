@@ -1,10 +1,65 @@
 "use client";
 
+import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
+type Mode = "signin" | "register";
+
 export function SignInCard() {
+  const [mode, setMode] = useState<Mode>("signin");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    try {
+      if (mode === "register") {
+        const res = await fetch("/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password, name }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          setError(data.error ?? "Registration failed.");
+          return;
+        }
+      }
+
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (result?.error === "NO_ACCOUNT") {
+        setError("No account found with this email. Did you sign in with Google before?");
+      } else if (result?.error === "INVALID_PASSWORD") {
+        setError("Incorrect password.");
+      } else if (result?.error) {
+        setError("Sign in failed. Please try again.");
+      } else {
+        // Successful — NextAuth will refresh the page
+        window.location.href = "/";
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function switchMode(next: Mode) {
+    setMode(next);
+    setError(null);
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-background">
       {/* Subtle grid background */}
@@ -27,8 +82,8 @@ export function SignInCard() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        className="relative z-10 flex flex-col items-center gap-8 rounded-lg border border-border bg-white px-10 py-12 shadow-sm"
-        style={{ minWidth: 360 }}
+        className="relative z-10 flex flex-col items-center gap-6 rounded-lg border border-border bg-white px-10 py-12 shadow-sm"
+        style={{ minWidth: 360, width: 360 }}
       >
         {/* Logo */}
         <div className="flex flex-col items-center gap-1.5">
@@ -52,8 +107,115 @@ export function SignInCard() {
           ))}
         </div>
 
-        {/* Sign in */}
-        <Button size="lg" className="w-full gap-3" onClick={() => signIn("google")}>
+        {/* Mode tabs */}
+        <div className="flex w-full rounded-md border border-border overflow-hidden text-sm">
+          <button
+            type="button"
+            onClick={() => switchMode("signin")}
+            className={`flex-1 py-2 transition-colors ${
+              mode === "signin"
+                ? "bg-foreground text-background font-medium"
+                : "text-muted-foreground hover:bg-secondary"
+            }`}
+          >
+            Sign in
+          </button>
+          <button
+            type="button"
+            onClick={() => switchMode("register")}
+            className={`flex-1 py-2 transition-colors ${
+              mode === "register"
+                ? "bg-foreground text-background font-medium"
+                : "text-muted-foreground hover:bg-secondary"
+            }`}
+          >
+            Create account
+          </button>
+        </div>
+
+        {/* Email/password form */}
+        <form onSubmit={handleSubmit} className="flex w-full flex-col gap-3">
+          <AnimatePresence initial={false}>
+            {mode === "register" && (
+              <motion.div
+                key="name"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden"
+              >
+                <input
+                  type="text"
+                  placeholder="Your name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <input
+            type="email"
+            placeholder="Email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            required
+            minLength={8}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+          />
+
+          <AnimatePresence>
+            {error && (
+              <motion.p
+                key="error"
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="rounded-md bg-red-50 px-3 py-2 text-xs text-red-600 border border-red-100"
+              >
+                {error}
+                {error.includes("Google") && (
+                  <button
+                    type="button"
+                    onClick={() => signIn("google")}
+                    className="ml-1 underline underline-offset-2 font-medium"
+                  >
+                    Sign in with Google
+                  </button>
+                )}
+              </motion.p>
+            )}
+          </AnimatePresence>
+
+          <Button type="submit" size="lg" className="w-full" disabled={loading}>
+            {loading ? "Please wait…" : mode === "signin" ? "Sign in" : "Create account"}
+          </Button>
+        </form>
+
+        {/* Divider */}
+        <div className="flex w-full items-center gap-3">
+          <div className="h-px flex-1 bg-border" />
+          <span className="text-xs text-muted-foreground">or</span>
+          <div className="h-px flex-1 bg-border" />
+        </div>
+
+        {/* Google */}
+        <Button
+          size="lg"
+          variant="outline"
+          className="w-full gap-3"
+          onClick={() => signIn("google")}
+        >
           <GoogleIcon />
           Continue with Google
         </Button>

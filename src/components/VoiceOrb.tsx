@@ -71,8 +71,7 @@ export function VoiceOrb({ state, onStartListening, onStopListening, analyserRef
   }
 
   return (
-    <div className="flex flex-col items-center gap-3">
-      <div className="relative flex items-center justify-center" style={{ width: 200, height: 200 }}>
+    <div className="relative flex items-center justify-center" style={{ width: 200, height: 200 }}>
         {/* Ping ring — listening */}
         {isListening && (
           <span
@@ -156,16 +155,6 @@ export function VoiceOrb({ state, onStartListening, onStopListening, analyserRef
             />
           )}
         </motion.button>
-      </div>
-
-      {/* Label — below the orb circle */}
-      <span className="text-xs text-muted-foreground tracking-wide uppercase font-medium">
-        {state === "idle" && "Tap to speak"}
-        {state === "listening" && "Listening…"}
-        {state === "thinking" && "Thinking…"}
-        {state === "speaking" && "Speaking…"}
-        {state === "error" && "Error"}
-      </span>
     </div>
   );
 }
