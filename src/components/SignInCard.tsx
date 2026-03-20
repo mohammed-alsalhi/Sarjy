@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Sun, Moon } from "lucide-react";
+import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 
 type Mode = "signin" | "register";
@@ -14,6 +16,7 @@ export function SignInCard() {
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const { resolvedTheme, setTheme } = useTheme();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -62,6 +65,13 @@ export function SignInCard() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background">
+      <button
+        onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+        className="absolute top-4 right-4 rounded-md p-2 text-muted-foreground hover:bg-secondary transition-colors"
+        aria-label="Toggle theme"
+      >
+        {resolvedTheme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+      </button>
       {/* Subtle grid background */}
       <div
         className="pointer-events-none absolute inset-0"
