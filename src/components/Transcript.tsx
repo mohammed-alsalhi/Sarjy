@@ -100,7 +100,7 @@ export function Transcript({ messages }: TranscriptProps) {
                   "max-w-md rounded-lg text-sm leading-relaxed overflow-hidden",
                   msg.role === "user"
                     ? "rounded-tr-sm bg-[#593aa7] text-white"
-                    : "rounded-tl-sm border border-border bg-white text-foreground shadow-sm"
+                    : "rounded-tl-sm border border-border bg-card text-card-foreground shadow-sm"
                 )}
               >
                 {msg.imageUrl && (
