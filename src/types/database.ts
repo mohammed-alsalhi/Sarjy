@@ -18,6 +18,7 @@ export type Database = {
           name?: string | null;
           password_hash?: string;
         };
+        Relationships: [];
       };
       memory_facts: {
         Row: {
@@ -36,6 +37,7 @@ export type Database = {
         Update: Partial<
           Database["public"]["Tables"]["memory_facts"]["Insert"]
         >;
+        Relationships: [];
       };
     };
     Views: Record<string, never>;

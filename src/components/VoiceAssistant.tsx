@@ -27,6 +27,7 @@ export function VoiceAssistant() {
   const { data: session } = useSession();
   const [memoryOpen, setMemoryOpen] = useState(false);
   const [memoryRefreshKey, setMemoryRefreshKey] = useState(0);
+  const [memoryCount, setMemoryCount] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { state, messages, language, analyserRef, pendingImage, setPendingImage, startListening, stopListening } =
@@ -66,6 +67,7 @@ export function VoiceAssistant() {
         memoryOpen={memoryOpen}
         onToggleMemory={() => setMemoryOpen((o) => !o)}
         language={language}
+        memoryCount={memoryCount}
       />
 
       <main className="relative flex flex-1 overflow-hidden">
@@ -144,6 +146,7 @@ export function VoiceAssistant() {
           open={memoryOpen}
           onClose={() => setMemoryOpen(false)}
           refreshKey={memoryRefreshKey}
+          onCountChange={setMemoryCount}
         />
       </main>
     </div>

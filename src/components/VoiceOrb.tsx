@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { motion } from "framer-motion";
-import { Mic } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Mic, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 export type AssistantState = "idle" | "listening" | "thinking" | "speaking" | "error";
@@ -22,6 +22,7 @@ export function VoiceOrb({ state, onStartListening, onStopListening, analyserRef
   const isThinking = state === "thinking";
   const isSpeaking = state === "speaking";
   const isActive = isListening || isSpeaking;
+  const isError = state === "error";
 
   const barRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const animFrameRef = useRef<number>(0);
@@ -31,7 +32,6 @@ export function VoiceOrb({ state, onStartListening, onStopListening, analyserRef
   useEffect(() => {
     if (!isSpeaking) {
       cancelAnimationFrame(animFrameRef.current);
-      // Reset bar heights
       barRefs.current.forEach((bar) => {
         if (bar) bar.style.height = "20px";
       });
@@ -71,7 +71,8 @@ export function VoiceOrb({ state, onStartListening, onStopListening, analyserRef
   }
 
   return (
-    <div className="relative flex items-center justify-center" style={{ width: 200, height: 200 }}>
+    <div className="flex flex-col items-center gap-3">
+      <div className="relative flex items-center justify-center" style={{ width: 200, height: 200 }}>
         {/* Ping ring — listening */}
         {isListening && (
           <span
@@ -94,6 +95,16 @@ export function VoiceOrb({ state, onStartListening, onStopListening, analyserRef
           />
         )}
 
+        {/* Error pulse ring */}
+        {isError && (
+          <motion.div
+            className="absolute rounded-full border-2 border-red-300"
+            style={{ width: 200, height: 200 }}
+            animate={{ opacity: [0.6, 0.2, 0.6] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+          />
+        )}
+
         {/* Orb button */}
         <motion.button
           onClick={handleClick}
@@ -101,7 +112,7 @@ export function VoiceOrb({ state, onStartListening, onStopListening, analyserRef
             "relative z-10 flex items-center justify-center rounded-full border bg-white transition-all focus:outline-none",
             "border-border shadow-sm",
             isActive && "border-[#593aa7]/40 shadow-md",
-            state === "error" && "border-red-300"
+            isError && "border-red-300 bg-red-50/40"
           )}
           style={{ width: 176, height: 176 }}
           whileHover={{ scale: 1.02 }}
@@ -146,15 +157,28 @@ export function VoiceOrb({ state, onStartListening, onStopListening, analyserRef
               animate={{ rotate: 360 }}
               transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
             />
+          ) : isError ? (
+            <AlertCircle className="h-8 w-8 text-red-400" />
           ) : (
-            <Mic
-              className={cn(
-                "h-7 w-7 transition-colors",
-                state === "error" ? "text-red-400" : "text-muted-foreground"
-              )}
-            />
+            <Mic className="h-7 w-7 text-muted-foreground" />
           )}
         </motion.button>
+      </div>
+
+      {/* Error message below orb */}
+      <AnimatePresence>
+        {isError && (
+          <motion.p
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.2 }}
+            className="text-xs text-red-400 font-medium"
+          >
+            Something went wrong — tap to retry
+          </motion.p>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

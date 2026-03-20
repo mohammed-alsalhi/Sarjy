@@ -30,9 +30,31 @@ interface StatusBarProps {
   memoryOpen: boolean;
   onToggleMemory: () => void;
   language?: string;
+  memoryCount?: number;
 }
 
-export function StatusBar({ state, userName, userImage, memoryOpen, onToggleMemory, language }: StatusBarProps) {
+function StateDot({ state }: { state: AssistantState }) {
+  const colorClass = {
+    idle: "bg-border",
+    listening: "bg-[#593aa7]",
+    thinking: "bg-yellow-400",
+    speaking: "bg-green-500",
+    error: "bg-red-400",
+  }[state];
+
+  return (
+    <span className="relative flex h-2 w-2 items-center justify-center">
+      {(state === "listening" || state === "speaking") && (
+        <span
+          className={cn("absolute inline-flex h-full w-full animate-ping rounded-full opacity-60", colorClass)}
+        />
+      )}
+      <span className={cn("relative inline-flex h-1.5 w-1.5 rounded-full", colorClass)} />
+    </span>
+  );
+}
+
+export function StatusBar({ state, userName, userImage, memoryOpen, onToggleMemory, language, memoryCount }: StatusBarProps) {
   return (
     <TooltipProvider delayDuration={300}>
       <header className="flex h-14 items-center justify-between border-b border-border bg-white px-5">
@@ -43,16 +65,7 @@ export function StatusBar({ state, userName, userImage, memoryOpen, onToggleMemo
 
         {/* State indicator */}
         <div className="flex items-center gap-2">
-          <span
-            className={cn(
-              "h-1.5 w-1.5 rounded-full",
-              state === "idle" && "bg-border",
-              state === "listening" && "bg-[#593aa7]",
-              state === "thinking" && "bg-yellow-400",
-              state === "speaking" && "bg-green-500",
-              state === "error" && "bg-red-400"
-            )}
-          />
+          <StateDot state={state} />
           <AnimatePresence mode="wait">
             <motion.span
               key={state}
@@ -80,17 +93,35 @@ export function StatusBar({ state, userName, userImage, memoryOpen, onToggleMemo
                 variant={memoryOpen ? "secondary" : "ghost"}
                 size="icon"
                 onClick={onToggleMemory}
-                className={memoryOpen ? "border border-[#593aa7]/20 bg-[#593aa7]/5 text-[#593aa7]" : ""}
+                className={cn(
+                  "relative",
+                  memoryOpen ? "border border-[#593aa7]/20 bg-[#593aa7]/5 text-[#593aa7]" : ""
+                )}
               >
                 <Brain className="h-4 w-4" />
+                {memoryCount != null && memoryCount > 0 && (
+                  <span className="absolute -right-0.5 -top-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-[#593aa7] text-[9px] font-semibold text-white leading-none">
+                    {memoryCount > 99 ? "99" : memoryCount}
+                  </span>
+                )}
               </Button>
             </TooltipTrigger>
             <TooltipContent>Memory</TooltipContent>
           </Tooltip>
 
-          {userImage && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={userImage} alt={userName ?? ""} className="mx-1 h-7 w-7 rounded-full border border-border" />
+          {/* User avatar + name */}
+          {(userImage || userName) && (
+            <div className="mx-1 flex items-center gap-1.5">
+              {userImage && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={userImage} alt={userName ?? ""} className="h-7 w-7 rounded-full border border-border" />
+              )}
+              {userName && (
+                <span className="hidden text-xs text-muted-foreground sm:block">
+                  {userName.split(" ")[0]}
+                </span>
+              )}
+            </div>
           )}
 
           <Tooltip>
