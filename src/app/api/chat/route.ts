@@ -91,6 +91,17 @@ const TOOLS: Anthropic.Tool[] = [
     },
   },
   {
+    name: "search_drive",
+    description: "Search the user's Google Drive for files by name or content.",
+    input_schema: {
+      type: "object",
+      properties: {
+        query: { type: "string", description: "Search query, e.g. 'Q4 budget' or 'meeting notes'" },
+      },
+      required: ["query"],
+    },
+  },
+  {
     name: "find_flights",
     description: "Search for flights between two cities on a given date.",
     input_schema: {
@@ -198,6 +209,29 @@ async function executeTool(
       body: JSON.stringify({ text: input.message }),
     });
     return res.ok ? "Message sent to Slack." : "Failed to send Slack message.";
+  }
+
+  if (name === "search_drive") {
+    if (!accessToken) return "Google Drive access not available. Please sign out and sign in again.";
+    const url = new URL("https://www.googleapis.com/drive/v3/files");
+    url.searchParams.set("q", `fullText contains '${(input.query as string).replace(/'/g, "\\'")}'`);
+    url.searchParams.set("fields", "files(id,name,mimeType,modifiedTime,webViewLink)");
+    url.searchParams.set("pageSize", "5");
+    url.searchParams.set("orderBy", "modifiedTime desc");
+    const res = await fetch(url.toString(), {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    if (!res.ok) return "Could not search Google Drive. Your session may need to be refreshed.";
+    const data = await res.json();
+    const files: Array<{ name: string; mimeType: string; modifiedTime: string; webViewLink: string }> = data.files ?? [];
+    if (!files.length) return `No files found in Google Drive matching "${input.query}".`;
+    return files
+      .map((f) => {
+        const type = f.mimeType.includes("folder") ? "Folder" : f.mimeType.split(".").pop() ?? "File";
+        const modified = new Date(f.modifiedTime).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+        return `${f.name} (${type}, modified ${modified}) — ${f.webViewLink}`;
+      })
+      .join("\n");
   }
 
   if (name === "find_flights") {
