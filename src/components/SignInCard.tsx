@@ -221,7 +221,7 @@ export function SignInCard() {
         </Button>
 
         <p className="text-center text-xs text-muted-foreground/70">
-          Your conversations are private and encrypted.
+          Your conversations are private and stored securely.
         </p>
       </motion.div>
     </div>

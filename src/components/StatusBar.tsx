@@ -57,14 +57,14 @@ function StateDot({ state }: { state: AssistantState }) {
 export function StatusBar({ state, userName, userImage, memoryOpen, onToggleMemory, language, memoryCount }: StatusBarProps) {
   return (
     <TooltipProvider delayDuration={300}>
-      <header className="flex h-14 items-center justify-between border-b border-border bg-white px-5">
+      <header className="relative flex h-14 items-center justify-between border-b border-border bg-white px-5">
         {/* Logo */}
         <span className="font-display text-lg font-semibold tracking-tight text-foreground">
           sarjy
         </span>
 
-        {/* State indicator */}
-        <div className="flex items-center gap-2">
+        {/* State indicator — absolutely centered */}
+        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
           <StateDot state={state} />
           <AnimatePresence mode="wait">
             <motion.span
