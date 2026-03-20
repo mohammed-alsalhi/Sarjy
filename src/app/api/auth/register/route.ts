@@ -27,7 +27,8 @@ export async function POST(req: Request) {
 
   const password_hash = await bcrypt.hash(password, 12);
 
-  const { error } = await db.from("credential_users").insert({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (db.from("credential_users") as any).insert({
     email: normalized,
     name: name?.trim() || null,
     password_hash,

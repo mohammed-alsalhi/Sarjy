@@ -20,7 +20,7 @@ export async function getUserFacts(userId: string): Promise<MemoryFact[]> {
     .eq("user_id", userId)
     .order("created_at", { ascending: false })
     .limit(50);
-  return data ?? [];
+  return (data as MemoryFact[] | null) ?? [];
 }
 
 /** Upsert a fact (by key) */

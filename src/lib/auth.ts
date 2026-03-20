@@ -38,11 +38,12 @@ export const authOptions: NextAuthOptions = {
         if (!credentials?.email || !credentials?.password) return null;
 
         const db = createServerSupabase();
-        const { data: user } = await db
+        const { data } = await db
           .from("credential_users")
           .select("id, email, name, password_hash")
           .eq("email", credentials.email.toLowerCase())
           .single();
+        const user = data as { id: string; email: string; name: string | null; password_hash: string } | null;
 
         if (!user) {
           // Check if they might have signed up via Google (no credentials record found)
