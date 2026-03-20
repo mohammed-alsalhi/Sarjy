@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/cn";
 
@@ -12,6 +13,37 @@ export type DisplayMessage = {
   toolCalls?: { name: string; result?: string }[];
   imageUrl?: string; // data URL — shown as thumbnail in user bubble
 };
+
+function ToolCallBadge({ tc }: { tc: { name: string; result?: string } }) {
+  const [open, setOpen] = useState(false);
+  const hasResult = !!tc.result;
+  const isDone = hasResult;
+
+  return (
+    <div className="rounded border border-[#593aa7]/20 bg-[#593aa7]/5 text-xs text-[#593aa7] overflow-hidden max-w-xs">
+      <button
+        onClick={() => hasResult && setOpen((o) => !o)}
+        className={cn(
+          "flex w-full items-center gap-1.5 px-2 py-1 text-left",
+          hasResult ? "cursor-pointer hover:bg-[#593aa7]/10 transition-colors" : "cursor-default"
+        )}
+      >
+        <span className="shrink-0">{isDone ? "✓" : "⟳"}</span>
+        <span className="font-medium truncate">{tc.name}</span>
+        {hasResult && (
+          open
+            ? <ChevronDown className="ml-auto shrink-0 h-3 w-3 opacity-60" />
+            : <ChevronRight className="ml-auto shrink-0 h-3 w-3 opacity-60" />
+        )}
+      </button>
+      {open && tc.result && (
+        <div className="border-t border-[#593aa7]/15 px-2 py-1.5 text-[#593aa7]/80 whitespace-pre-wrap break-words font-mono text-[11px] max-h-40 overflow-y-auto">
+          {tc.result}
+        </div>
+      )}
+    </div>
+  );
+}
 
 interface TranscriptProps {
   messages: DisplayMessage[];
@@ -48,12 +80,7 @@ export function Transcript({ messages }: TranscriptProps) {
               {msg.toolCalls && msg.toolCalls.length > 0 && (
                 <div className="flex flex-wrap gap-1 px-1">
                   {msg.toolCalls.map((tc, i) => (
-                    <span
-                      key={i}
-                      className="rounded border border-[#593aa7]/20 bg-[#593aa7]/5 px-2 py-0.5 text-xs text-[#593aa7]"
-                    >
-                      {tc.result ? `✓ ${tc.name}: ${tc.result}` : `⟳ ${tc.name}…`}
-                    </span>
+                    <ToolCallBadge key={i} tc={tc} />
                   ))}
                 </div>
               )}
