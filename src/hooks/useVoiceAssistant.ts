@@ -108,6 +108,7 @@ export function useVoiceAssistant({ onMemoryUpdate }: UseVoiceAssistantOptions =
         // Barge-in: cut TTS immediately when user speaks
         if (stateRef.current === "speaking") {
           stopRef.current();
+          activeRef.current = true;
           setState("listening");
         }
       },
