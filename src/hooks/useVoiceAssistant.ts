@@ -67,7 +67,7 @@ export function useVoiceAssistant({ onMemoryUpdate }: UseVoiceAssistantOptions =
   const [state, setState] = useState<AssistantState>("idle");
   const [messages, setMessages] = useState<DisplayMessage[]>([]);
   const [language, setLanguage] = useState<string>("en");
-  const [pendingImage, setPendingImage] = useState<PendingImage | null>(null);
+  const [pendingImage, _setPendingImage] = useState<PendingImage | null>(null);
   const [toolStatuses, setToolStatuses] = useState<Record<string, ToolStatus>>({});
   const toolResetTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
 
@@ -75,10 +75,16 @@ export function useVoiceAssistant({ onMemoryUpdate }: UseVoiceAssistantOptions =
   const activeRef = useRef(false);
   const stateRef = useRef<AssistantState>("idle");
   const pendingImageRef = useRef<PendingImage | null>(null);
+  const sendMessageRef = useRef<(transcript: string, lang?: string) => Promise<void>>(async () => {});
 
-  // Keep refs in sync so stale VAD callbacks can read current values
+  // Keep stateRef in sync so VAD callbacks can read current state
   useEffect(() => { stateRef.current = state; }, [state]);
-  useEffect(() => { pendingImageRef.current = pendingImage; }, [pendingImage]);
+
+  // Synchronously update both state and ref so stale closures always read the latest image
+  function setPendingImage(img: PendingImage | null) {
+    pendingImageRef.current = img;
+    _setPendingImage(img);
+  }
 
   const { enqueue, stop, analyser } = useAudioPlayer({
     onStart: () => setState("speaking"),
@@ -128,7 +134,7 @@ export function useVoiceAssistant({ onMemoryUpdate }: UseVoiceAssistantOptions =
           }).then((r) => r.json());
 
           if (lang) setLanguage(lang);
-          await sendMessage(transcript, lang ?? "en");
+          await sendMessageRef.current(transcript, lang ?? "en");
         } catch {
           setState("error");
           setTimeout(() => setState("idle"), 2000);
@@ -291,6 +297,8 @@ export function useVoiceAssistant({ onMemoryUpdate }: UseVoiceAssistantOptions =
       setTimeout(() => setState("idle"), 2000);
     }
   }
+  // Update ref on every render so onSpeechEnd always calls the latest sendMessage
+  sendMessageRef.current = sendMessage;
 
   const startListening = useCallback(async () => {
     if (state !== "idle" && state !== "error") return;
