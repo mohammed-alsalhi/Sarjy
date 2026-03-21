@@ -156,18 +156,20 @@ async function executeTool(
       body: JSON.stringify({
         api_key: process.env.TAVILY_API_KEY,
         query: input.query,
-        search_depth: "basic",
-        max_results: 3,
+        search_depth: "advanced",
+        max_results: 4,
+        include_answer: true,
       }),
     });
     if (!res.ok) return "Search failed";
     const data = await res.json();
-    return (
-      (data.results ?? [])
-        .slice(0, 3)
-        .map((r: { title: string; content: string }) => `${r.title}: ${r.content}`)
-        .join("\n") || "No results found"
-    );
+    const results: Array<{ title: string; content: string; url: string }> = data.results ?? [];
+    if (!results.length) return "No results found";
+    const lines = results
+      .slice(0, 4)
+      .map((r) => `[${r.title}](${r.url}): ${r.content.slice(0, 300)}`);
+    if (data.answer) lines.unshift(`Summary: ${data.answer}`);
+    return lines.join("\n\n");
   }
 
   if (name === "get_calendar_events") {
@@ -330,6 +332,7 @@ Important:
 - Keep responses concise for voice — 1–3 sentences unless the user asks for detail.
 - When you learn something worth remembering (name, preference, todo, important fact), use save_memory.
 - Always respond in plain text — no markdown, no bullet points.
+- When answering from web_search results, only report facts explicitly stated in the results. Never add details from your training data.
 - Do not discuss violence, illegal activities, explicit content, or competitor AI products. If asked, politely decline.
 
 Workflows — follow these exactly when triggered:
