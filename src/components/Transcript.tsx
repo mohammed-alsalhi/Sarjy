@@ -112,7 +112,7 @@ export function Transcript({ messages }: TranscriptProps) {
                   />
                 )}
                 {msg.content && (
-                  <p className="px-3.5 py-2">{msg.content}</p>
+                  <p className="px-3.5 py-2 break-words">{msg.content}</p>
                 )}
               </div>
 

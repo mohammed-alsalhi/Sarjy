@@ -246,25 +246,27 @@ async function executeTool(
 
   if (name === "find_flights") {
     const cabin = (input.cabin as string | undefined) ?? "economy";
-    const query = `cheapest ${cabin} class flights from ${input.origin} to ${input.destination} on ${input.date} prices availability`;
+    const query = `${cabin} class flights from ${input.origin} to ${input.destination} on ${input.date} prices availability booking`;
     const res = await fetch("https://api.tavily.com/search", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         api_key: process.env.TAVILY_API_KEY,
         query,
-        search_depth: "basic",
+        search_depth: "advanced",
         max_results: 4,
+        include_answer: true,
       }),
     });
     if (!res.ok) return "Flight search failed.";
     const data = await res.json();
     const results: Array<{ title: string; content: string; url: string }> = data.results ?? [];
     if (!results.length) return "No flight results found.";
-    return results
-      .slice(0, 3)
-      .map((r) => `${r.title}: ${r.content.slice(0, 200)}`)
-      .join("\n\n");
+    const lines = results
+      .slice(0, 4)
+      .map((r) => `[${r.title}](${r.url}): ${r.content.slice(0, 300)}`);
+    if (data.answer) lines.unshift(`Summary: ${data.answer}`);
+    return lines.join("\n\n");
   }
 
   return "Unknown tool";
