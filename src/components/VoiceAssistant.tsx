@@ -3,7 +3,7 @@
 import { useState, useRef, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { ImagePlus, X } from "lucide-react";
-import { VoiceOrb } from "@/components/VoiceOrb";
+import { TalkingAvatar } from "@/components/TalkingAvatar";
 import { Transcript } from "@/components/Transcript";
 import { StatusBar } from "@/components/StatusBar";
 import { MemoryPanel } from "@/components/MemoryPanel";
@@ -119,7 +119,7 @@ export function VoiceAssistant() {
                 <ImagePlus className="h-4 w-4 text-muted-foreground" />
               </button>
 
-              <VoiceOrb
+              <TalkingAvatar
                 state={state}
                 onStartListening={startListening}
                 onStopListening={stopListening}
