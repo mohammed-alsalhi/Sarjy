@@ -308,6 +308,11 @@
     box-shadow: 0 0 0 2px #593aa740;
   }
 
+  .timeline-dot.done {
+    background: #16a34a;
+    box-shadow: 0 0 0 2px #bbf7d0;
+  }
+
   .timeline-label {
     font-size: 7.5pt;
     font-weight: 600;
@@ -316,6 +321,8 @@
     color: #593aa7;
     margin-bottom: 4px;
   }
+
+  .timeline-label.done { color: #16a34a; }
 
   .timeline-title {
     font-family: 'Clash Grotesk', 'Switzer', sans-serif;
@@ -485,7 +492,6 @@
       break-after: page;
     }
 
-    /* Hard A4 boundary — each div is exactly one page */
     .page {
       page-break-before: always;
       break-before: page;
@@ -508,35 +514,28 @@
     .section-intro { margin-bottom: 8px; padding: 7px 12px; font-size: 9pt; }
     .callout       { margin: 8px 0;      padding: 9px 14px; font-size: 9pt; }
 
-    /* Tables — most critical for fitting pages 3 & 5 */
     table { font-size: 7.5pt; margin-bottom: 10px; border-radius: 0; }
     th, td { padding: 4px 8px; line-height: 1.4; }
 
-    /* Cards */
     .card-grid { gap: 8px; margin-bottom: 10px; }
     .card { padding: 10px 12px; }
     .card p, .card h4 { font-size: 8.5pt; }
 
-    /* Timeline */
     .timeline-item { padding-left: 18px; margin-bottom: 10px; }
     .timeline-label { font-size: 7.5pt; margin-bottom: 1px; }
     .timeline-title { font-size: 9.5pt; }
     .timeline-body  { font-size: 8.5pt; margin-top: 2px; line-height: 1.4; }
 
-    /* Cost box */
     .cost-box { padding: 10px 14px; margin-bottom: 10px; border-radius: 6px; }
     .cost-row { padding: 4px 0; font-size: 8.5pt; }
 
-    /* Arch diagram */
     .arch { padding: 10px 14px; margin-bottom: 10px; }
     .arch-box { padding: 5px 8px; font-size: 7.5pt; }
     .arch-flow { gap: 4px; }
     .arch-arrow { font-size: 8pt; }
 
-    /* Pills */
     .pill { font-size: 6.5pt; padding: 2px 5px; }
 
-    /* Page header & footer */
     .page-header { margin-bottom: 8px; padding-bottom: 6px; font-size: 7pt; }
     .footer       { margin-top: 10px; padding-top: 6px; font-size: 7pt; }
   }
@@ -575,7 +574,7 @@
     </div>
     <div class="cover-meta-item">
       <div class="cover-meta-label">Version</div>
-      <div class="cover-meta-value">Beta</div>
+      <div class="cover-meta-value">v1.0</div>
     </div>
     <div class="cover-meta-item">
       <div class="cover-meta-label">Date</div>
@@ -599,12 +598,12 @@
 <div class="page">
   <div class="page-header">
     <span class="page-header-brand">Sarjy</span>
-    <span class="page-header-doc">Product Requirements Document · Beta</span>
+    <span class="page-header-doc">Product Requirements Document · v1.0</span>
   </div>
 
   <h1>Overview</h1>
   <p style="font-size:11.5pt; color:#474747; margin-bottom:32px;">
-    Sarjy is a production-grade AI voice assistant with persistent memory, real-time tool execution, multilingual support, and telephony.
+    Sarjy is a production-grade AI voice assistant with persistent memory, real-time tool execution, multilingual support, a talking avatar, and telephony — callable from any phone.
   </p>
 
   <div class="callout">
@@ -625,7 +624,7 @@
     <div class="card">
       <div class="card-icon">⏱️</div>
       <h4>High Latency</h4>
-      <p>Most voice pipelines take 3–5s end-to-end. Sarjy targets sub-1s first audio.</p>
+      <p>Most voice pipelines take 3–5s end-to-end. Sarjy delivers first audio in ~1.2s.</p>
     </div>
     <div class="card">
       <div class="card-icon">🔒</div>
@@ -635,7 +634,7 @@
     <div class="card">
       <div class="card-icon">📱</div>
       <h4>Platform Lock-in</h4>
-      <p>Tied to specific devices. Sarjy is web-first and works via phone call too.</p>
+      <p>Tied to specific devices. Sarjy is web-first, installable as a PWA, and callable via any phone.</p>
     </div>
   </div>
 
@@ -693,7 +692,7 @@
 <div class="page page-break">
   <div class="page-header">
     <span class="page-header-brand">Sarjy</span>
-    <span class="page-header-doc">Product Requirements Document · Beta</span>
+    <span class="page-header-doc">Product Requirements Document · v1.0</span>
   </div>
 
   <h2><span class="num">3</span> System Architecture</h2>
@@ -729,13 +728,24 @@
     <div class="arch-flow" style="margin-top:12px;">
       <div class="arch-box">Tool Calls</div>
       <div class="arch-arrow">→</div>
-      <div class="arch-box">Weather API</div>
+      <div class="arch-box">Weather</div>
       <div class="arch-arrow">|</div>
       <div class="arch-box">Tavily Search</div>
       <div class="arch-arrow">|</div>
       <div class="arch-box">Google Calendar</div>
       <div class="arch-arrow">|</div>
       <div class="arch-box">Slack</div>
+    </div>
+    <div class="arch-flow" style="margin-top:12px;">
+      <div class="arch-box">📞 Phone Call</div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box">Twilio TwiML<br/><span style="font-size:7.5pt;font-weight:400">/api/twilio/voice</span></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box">Gather STT<br/><span style="font-size:7.5pt;font-weight:400">/api/twilio/gather</span></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box">Claude Haiku</div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box">Polly TTS</div>
     </div>
   </div>
 
@@ -766,7 +776,7 @@
       <tr><td>Auth</td><td>NextAuth + Google OAuth</td><td>Reuse Google token for Calendar</td></tr>
       <tr><td>Short memory</td><td>Upstash Redis</td><td>Serverless, edge-native, TTL support</td></tr>
       <tr><td>Long memory</td><td>Supabase Postgres</td><td>RLS, structured queries, free tier</td></tr>
-      <tr><td>Telephony</td><td>Twilio Voice + WebSockets</td><td>Real phone number, bidirectional audio</td></tr>
+      <tr><td>Telephony</td><td>Twilio Voice (TwiML + Gather)</td><td>Real phone number, speech I/O over PSTN</td></tr>
       <tr><td>Search</td><td>Tavily API</td><td>LLM-optimised results, generous free tier</td></tr>
       <tr><td>Deploy</td><td>Vercel</td><td>Zero-config Next.js, edge runtime</td></tr>
     </tbody>
@@ -782,7 +792,7 @@
 <div class="page page-break">
   <div class="page-header">
     <span class="page-header-brand">Sarjy</span>
-    <span class="page-header-doc">Product Requirements Document · Beta</span>
+    <span class="page-header-doc">Product Requirements Document · v1.0</span>
   </div>
 
   <h2><span class="num">5</span> Feature Requirements</h2>
@@ -817,9 +827,9 @@
       </tr>
       <tr>
         <td><strong>Text-to-Speech</strong></td>
-        <td>ElevenLabs Turbo v2.5 streamed via Web Audio API with AnalyserNode amplitude tracking.</td>
+        <td>ElevenLabs Turbo v2.5. Sentence-level streaming — first audio in ~800ms. AnalyserNode amplitude tracking for avatar lip-sync.</td>
         <td><span class="pill pill-p0">P0</span></td>
-        <td><span class="pill status-active">Active</span></td>
+        <td><span class="pill status-done">Done</span></td>
       </tr>
       <tr>
         <td><strong>Persistent Memory</strong></td>
@@ -841,75 +851,69 @@
       </tr>
       <tr>
         <td><strong>Web Search Tool</strong></td>
-        <td>Tavily API for real-time information. LLM-optimised result summaries.</td>
+        <td>Tavily advanced search for real-time info. Full page content + grounding anchor to prevent hallucination.</td>
         <td><span class="pill pill-p0">P0</span></td>
         <td><span class="pill status-done">Done</span></td>
       </tr>
       <tr>
-        <td><strong>Interrupt Detection</strong></td>
-        <td>VAD onSpeechStart stops TTS playback instantly. Natural barge-in behaviour.</td>
+        <td><strong>Barge-in Interrupt</strong></td>
+        <td>VAD onSpeechStart stops TTS playback instantly. Natural interrupt behaviour with no lost audio.</td>
         <td><span class="pill pill-p1">P1</span></td>
-        <td><span class="pill status-next">Next</span></td>
-      </tr>
-      <tr>
-        <td><strong>Streaming TTS (sentence-level)</strong></td>
-        <td>Split Claude output at sentence boundaries, pipe each to ElevenLabs immediately. First audio in ~800ms.</td>
-        <td><span class="pill pill-p1">P1</span></td>
-        <td><span class="pill status-next">Next</span></td>
+        <td><span class="pill status-done">Done</span></td>
       </tr>
       <tr>
         <td><strong>Language Switching</strong></td>
         <td>Whisper detects spoken language. Claude responds in same language. Flag shown in status bar.</td>
         <td><span class="pill pill-p1">P1</span></td>
-        <td><span class="pill status-next">Next</span></td>
+        <td><span class="pill status-done">Done</span></td>
       </tr>
       <tr>
-        <td><strong>Animated Lip-Sync Avatar</strong></td>
-        <td>SVG face animated by AnalyserNode amplitude. Mouth opens/closes with speech in real time.</td>
+        <td><strong>Talking Avatar</strong></td>
+        <td>SVG face with real-time lip-sync (AnalyserNode amplitude), periodic blinking, expressive eyebrows and pupils per state.</td>
         <td><span class="pill pill-p1">P1</span></td>
-        <td><span class="pill status-next">Next</span></td>
+        <td><span class="pill status-done">Done</span></td>
       </tr>
       <tr>
         <td><strong>Google Calendar Integration</strong></td>
-        <td>Read/create events via reused Google OAuth token. "What's on my calendar tomorrow?"</td>
+        <td>Read/create events via reused Google OAuth token with auto-refresh. "What's on my calendar tomorrow?"</td>
         <td><span class="pill pill-p1">P1</span></td>
-        <td><span class="pill status-next">Next</span></td>
-      </tr>
-      <tr>
-        <td><strong>Personality Assessment Workflow</strong></td>
-        <td>5-question MBTI-style flow guided by voice. Result saved to memory. Informs future responses.</td>
-        <td><span class="pill pill-p1">P1</span></td>
-        <td><span class="pill status-next">Next</span></td>
-      </tr>
-      <tr>
-        <td><strong>Guardrails</strong></td>
-        <td>System prompt topic blocklist + Llama Guard pre-check on Groq. Graceful deflections.</td>
-        <td><span class="pill pill-p1">P1</span></td>
-        <td><span class="pill status-next">Next</span></td>
-      </tr>
-      <tr>
-        <td><strong>Telephony (Twilio)</strong></td>
-        <td>Inbound phone number → bidirectional WebSocket → full voice pipeline over PSTN.</td>
-        <td><span class="pill pill-p2">P2</span></td>
-        <td><span class="pill status-future">Planned</span></td>
-      </tr>
-      <tr>
-        <td><strong>Multimodal Input</strong></td>
-        <td>Image upload button. Claude Vision describes image. "What's in this photo?"</td>
-        <td><span class="pill pill-p2">P2</span></td>
-        <td><span class="pill status-future">Planned</span></td>
+        <td><span class="pill status-done">Done</span></td>
       </tr>
       <tr>
         <td><strong>Slack Integration</strong></td>
         <td>Outbound webhook. "Sarjy, message #general that I'll be late."</td>
+        <td><span class="pill pill-p1">P1</span></td>
+        <td><span class="pill status-done">Done</span></td>
+      </tr>
+      <tr>
+        <td><strong>Personality Assessment Workflow</strong></td>
+        <td>5-question MBTI-style voice flow. Result saved to memory. Informs all future responses.</td>
+        <td><span class="pill pill-p1">P1</span></td>
+        <td><span class="pill status-done">Done</span></td>
+      </tr>
+      <tr>
+        <td><strong>Guardrails</strong></td>
+        <td>System prompt topic blocklist + Llama Guard 3 8B pre-check on Groq. Graceful deflections.</td>
+        <td><span class="pill pill-p1">P1</span></td>
+        <td><span class="pill status-done">Done</span></td>
+      </tr>
+      <tr>
+        <td><strong>Multimodal Input</strong></td>
+        <td>Image upload button. Claude Vision describes image. "What's in this photo?" — spoken answer.</td>
         <td><span class="pill pill-p2">P2</span></td>
-        <td><span class="pill status-future">Planned</span></td>
+        <td><span class="pill status-done">Done</span></td>
+      </tr>
+      <tr>
+        <td><strong>Telephony (Twilio)</strong></td>
+        <td>Real phone number. Inbound call → TwiML Gather STT → Claude Haiku → Polly TTS → looped conversation.</td>
+        <td><span class="pill pill-p2">P2</span></td>
+        <td><span class="pill status-done">Done</span></td>
       </tr>
       <tr>
         <td><strong>Mobile PWA</strong></td>
-        <td>Installable on iOS/Android. Offline splash. Touch-optimised orb. Theme colour.</td>
+        <td>Installable on iOS/Android. Offline splash. Touch-optimised UI. Theme colour.</td>
         <td><span class="pill pill-p2">P2</span></td>
-        <td><span class="pill status-future">Planned</span></td>
+        <td><span class="pill status-done">Done</span></td>
       </tr>
     </tbody>
   </table>
@@ -924,15 +928,15 @@
 <div class="page page-break">
   <div class="page-header">
     <span class="page-header-brand">Sarjy</span>
-    <span class="page-header-doc">Product Requirements Document · Beta</span>
+    <span class="page-header-doc">Product Requirements Document · v1.0</span>
   </div>
 
   <h2><span class="num">6</span> Build Timeline</h2>
 
   <div class="timeline">
     <div class="timeline-item">
-      <div class="timeline-dot"></div>
-      <div class="timeline-label">Phase 0–7 · Complete</div>
+      <div class="timeline-dot done"></div>
+      <div class="timeline-label done">Day 1 · Complete</div>
       <div class="timeline-title">Core Voice Pipeline</div>
       <div class="timeline-body">
         VAD → Groq STT → Claude Haiku (streaming SSE + tool use) → ElevenLabs TTS → two-tier memory → Google Auth → Weather + Search tools. Full UI with animated orb, transcript, memory panel, status bar.
@@ -940,65 +944,29 @@
     </div>
 
     <div class="timeline-item">
-      <div class="timeline-dot"></div>
-      <div class="timeline-label">Phase A · In Progress</div>
-      <div class="timeline-title">UX Upgrades — Interrupt, Streaming TTS, Language</div>
+      <div class="timeline-dot done"></div>
+      <div class="timeline-label done">Day 2 · Complete</div>
+      <div class="timeline-title">Reliability, Polish &amp; Integrations</div>
       <div class="timeline-body">
-        Barge-in interrupt detection via VAD onSpeechStart. Sentence-level TTS streaming cuts latency to ~800ms. Language auto-detection from Whisper, Claude mirrors language, flag shown in status bar.
+        Google Calendar OAuth token auto-refresh (store refresh token, renew on 401). Vercel build fixes (Supabase TypeScript v2.49 breaking change). Dark mode. Google Calendar read/write. Slack outbound webhook. Flight search via Tavily. Personality assessment + symptom intake multistep workflows. Llama Guard guardrails. Multimodal image input.
       </div>
     </div>
 
     <div class="timeline-item">
-      <div class="timeline-dot"></div>
-      <div class="timeline-label">Phase B</div>
-      <div class="timeline-title">Animated Lip-Sync Avatar</div>
+      <div class="timeline-dot done"></div>
+      <div class="timeline-label done">Day 3 · Complete</div>
+      <div class="timeline-title">Avatar, Bug Fixes &amp; Telephony</div>
       <div class="timeline-body">
-        SVG face driven by Web Audio AnalyserNode. Mouth morphs between open/closed states proportionally to audio amplitude. Already have AnalyserNode plumbed in from TTS player.
+        Talking avatar: SVG face with AnalyserNode lip-sync, blinking, expressive eyebrows/pupils. Barge-in fix (stale ref in VAD callback). Multimodal fix (stale closure — switched to synchronous ref pattern). Web/flight search anti-hallucination (Tavily advanced depth + grounding anchor). Twilio telephony live — real phone number connected, TwiML Gather loop, full conversation over PSTN.
       </div>
     </div>
 
     <div class="timeline-item">
-      <div class="timeline-dot"></div>
-      <div class="timeline-label">Phase C</div>
-      <div class="timeline-title">Integrations — Calendar, Slack, Flights</div>
+      <div class="timeline-dot done"></div>
+      <div class="timeline-label done">Deploy · Complete</div>
+      <div class="timeline-title">Production on Vercel</div>
       <div class="timeline-body">
-        Google Calendar read/write via reused OAuth access token. Slack outbound webhook. Flight search via Tavily with structured query formatting. All exposed as Claude tool calls.
-      </div>
-    </div>
-
-    <div class="timeline-item">
-      <div class="timeline-dot"></div>
-      <div class="timeline-label">Phase D</div>
-      <div class="timeline-title">Multistep Workflows</div>
-      <div class="timeline-body">
-        Personality assessment: 5-question voice MBTI, result saved to Supabase memory. Symptom intake: structured chief complaint → duration → severity → summary. Both driven by conversation state, no extra code.
-      </div>
-    </div>
-
-    <div class="timeline-item">
-      <div class="timeline-dot"></div>
-      <div class="timeline-label">Phase E</div>
-      <div class="timeline-title">Guardrails + Multimodal</div>
-      <div class="timeline-body">
-        Llama Guard pre-check on Groq before Claude. Topic blocklist in system prompt. Image upload button with Claude Vision for photo understanding.
-      </div>
-    </div>
-
-    <div class="timeline-item">
-      <div class="timeline-dot"></div>
-      <div class="timeline-label">Phase F · Stretch</div>
-      <div class="timeline-title">Telephony — Twilio Phone Number</div>
-      <div class="timeline-body">
-        Twilio inbound voice call → TwiML Media Streams → WebSocket server → bidirectional audio → full Sarjy pipeline over PSTN. Demo: call a real phone number and talk to Sarjy.
-      </div>
-    </div>
-
-    <div class="timeline-item">
-      <div class="timeline-dot"></div>
-      <div class="timeline-label">Phase G · Final</div>
-      <div class="timeline-title">Deploy + Present</div>
-      <div class="timeline-body">
-        Vercel production deploy. Google OAuth redirect URIs updated. Loom recording. 5-minute demo script practiced. Cost analysis slide prepared.
+        Deployed to <code>sarjy-blush.vercel.app</code>. All environment variables configured. Google OAuth redirect URIs updated. Twilio webhook pointed at production URL. HTTPS required for VAD microphone access — Vercel handles this automatically.
       </div>
     </div>
   </div>
@@ -1013,7 +981,7 @@
 <div class="page page-break">
   <div class="page-header">
     <span class="page-header-brand">Sarjy</span>
-    <span class="page-header-doc">Product Requirements Document · Beta</span>
+    <span class="page-header-doc">Product Requirements Document · v1.0</span>
   </div>
 
   <h2><span class="num">7</span> Cost Model</h2>
@@ -1081,14 +1049,14 @@
   </table>
 
   <p style="font-size:9.5pt; color:#727272;">
-    At 10,000 users the biggest lever is ElevenLabs — switching to a self-hosted TTS model (e.g. Kokoro) could cut TTS cost to near zero. STT could move to Whisper.cpp on a dedicated GPU instance at ~$0.40/hr, covering ~80,000 minutes/hr of audio.
+    At 10,000 users the biggest lever is ElevenLabs — switching to self-hosted Kokoro TTS cuts that cost to near zero. STT could move to Whisper.cpp on a dedicated GPU instance at ~$0.40/hr, covering ~80,000 minutes/hr of audio.
   </p>
 
   <h2><span class="num">8</span> Latency Breakdown</h2>
 
   <table>
     <thead>
-      <tr><th>Step</th><th>Current</th><th>Optimised (Phase A)</th></tr>
+      <tr><th>Step</th><th>Baseline</th><th>Current (sentence streaming)</th></tr>
     </thead>
     <tbody>
       <tr><td>VAD end-of-speech detection</td><td>~200ms</td><td>~200ms (hardware-limited)</td></tr>
@@ -1124,7 +1092,12 @@
       <tr>
         <td>Google OAuth token expiry for Calendar</td>
         <td>High</td>
-        <td>Store refresh token in Supabase, auto-refresh on 401</td>
+        <td>Store refresh token in Supabase, auto-refresh on 401 — implemented</td>
+      </tr>
+      <tr>
+        <td>Vercel cold starts on first call</td>
+        <td>Medium</td>
+        <td>Paid plan keeps functions warm; <code>maxDuration=60</code> set on all routes</td>
       </tr>
       <tr>
         <td>Supabase RLS misconfiguration</td>
