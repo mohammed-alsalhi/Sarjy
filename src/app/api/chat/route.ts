@@ -138,11 +138,15 @@ async function executeTool(
   }
 
   if (name === "get_weather") {
-    const baseUrl = process.env.NEXTAUTH_URL ?? "http://localhost:3000";
-    const res = await fetch(`${baseUrl}/api/weather?location=${encodeURIComponent(input.location as string)}`);
-    if (!res.ok) return `Could not get weather for ${input.location}`;
-    const w = await res.json();
-    return `${w.location}: ${w.temp_f}°F (${w.temp_c}°C), ${w.condition}, humidity ${w.humidity}%, wind ${w.wind_mph} mph`;
+    const location = encodeURIComponent(input.location as string);
+    const res = await fetch(
+      `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${process.env.OPENWEATHER_API_KEY}&units=imperial`
+    );
+    const data = await res.json();
+    if (data.cod !== 200) return `Could not get weather for ${input.location}`;
+    const temp_f = Math.round(data.main.temp);
+    const temp_c = Math.round((data.main.temp - 32) * (5 / 9));
+    return `${data.name}, ${data.sys.country}: ${temp_f}°F (${temp_c}°C), ${data.weather[0].description}, humidity ${data.main.humidity}%, wind ${Math.round(data.wind.speed)} mph`;
   }
 
   if (name === "web_search") {

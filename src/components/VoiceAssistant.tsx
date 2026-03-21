@@ -7,6 +7,7 @@ import { TalkingAvatar } from "@/components/TalkingAvatar";
 import { Transcript } from "@/components/Transcript";
 import { StatusBar } from "@/components/StatusBar";
 import { MemoryPanel } from "@/components/MemoryPanel";
+import { ToolStatusPanel } from "@/components/ToolStatusPanel";
 import { useVoiceAssistant } from "@/hooks/useVoiceAssistant";
 
 function fileToImageData(file: File): Promise<{ data: string; mimeType: string; dataUrl: string }> {
@@ -30,7 +31,7 @@ export function VoiceAssistant() {
   const [memoryCount, setMemoryCount] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { state, messages, language, analyserRef, pendingImage, setPendingImage, startListening, stopListening } =
+  const { state, messages, language, analyserRef, pendingImage, setPendingImage, startListening, stopListening, toolStatuses } =
     useVoiceAssistant({ onMemoryUpdate: () => setMemoryRefreshKey((k) => k + 1) });
 
   const handleFileChange = useCallback(
@@ -140,6 +141,8 @@ export function VoiceAssistant() {
             </span>
           </div>
         </div>
+
+        <ToolStatusPanel statuses={toolStatuses} />
 
         {/* Memory panel — slides in from right */}
         <MemoryPanel

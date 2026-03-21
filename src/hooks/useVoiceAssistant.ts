@@ -61,18 +61,24 @@ interface PendingImage {
   dataUrl: string;     // for thumbnail display
 }
 
+export type ToolStatus = "idle" | "active" | "done";
+
 export function useVoiceAssistant({ onMemoryUpdate }: UseVoiceAssistantOptions = {}) {
   const [state, setState] = useState<AssistantState>("idle");
   const [messages, setMessages] = useState<DisplayMessage[]>([]);
   const [language, setLanguage] = useState<string>("en");
   const [pendingImage, setPendingImage] = useState<PendingImage | null>(null);
+  const [toolStatuses, setToolStatuses] = useState<Record<string, ToolStatus>>({});
+  const toolResetTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
 
   const vadRef = useRef<MicVAD | null>(null);
   const activeRef = useRef(false);
   const stateRef = useRef<AssistantState>("idle");
+  const pendingImageRef = useRef<PendingImage | null>(null);
 
-  // Keep stateRef in sync so VAD callbacks can read current state
+  // Keep refs in sync so stale VAD callbacks can read current values
   useEffect(() => { stateRef.current = state; }, [state]);
+  useEffect(() => { pendingImageRef.current = pendingImage; }, [pendingImage]);
 
   const { enqueue, stop, analyser } = useAudioPlayer({
     onStart: () => setState("speaking"),
@@ -146,9 +152,15 @@ export function useVoiceAssistant({ onMemoryUpdate }: UseVoiceAssistantOptions =
       return;
     }
 
-    // Capture and clear pending image atomically
-    const image = pendingImage;
-    if (image) setPendingImage(null);
+    // Reset tool statuses for this new turn
+    setToolStatuses({});
+
+    // Capture and clear pending image — read from ref to avoid stale closure
+    const image = pendingImageRef.current;
+    if (image) {
+      pendingImageRef.current = null;
+      setPendingImage(null);
+    }
 
     const userMsg: DisplayMessage = {
       id: crypto.randomUUID(),
@@ -220,6 +232,7 @@ export function useVoiceAssistant({ onMemoryUpdate }: UseVoiceAssistantOptions =
               }
               sentenceBuffer = remaining;
             } else if (event.type === "tool_start") {
+              setToolStatuses((prev) => ({ ...prev, [event.name]: "active" }));
               setMessages((prev) =>
                 prev.map((m) =>
                   m.id === assistantMsg.id
@@ -228,6 +241,12 @@ export function useVoiceAssistant({ onMemoryUpdate }: UseVoiceAssistantOptions =
                 )
               );
             } else if (event.type === "tool_result") {
+              setToolStatuses((prev) => ({ ...prev, [event.name]: "done" }));
+              // Clear any existing timer for this tool then schedule reset
+              if (toolResetTimers.current[event.name]) clearTimeout(toolResetTimers.current[event.name]);
+              toolResetTimers.current[event.name] = setTimeout(() => {
+                setToolStatuses((prev) => ({ ...prev, [event.name]: "idle" }));
+              }, 3000);
               if (event.name === "save_memory" || event.name === "delete_memory") {
                 hadMemoryUpdate = true;
               }
@@ -287,5 +306,5 @@ export function useVoiceAssistant({ onMemoryUpdate }: UseVoiceAssistantOptions =
     setState("idle");
   }, []);
 
-  return { state, messages, language, analyserRef: analyser, pendingImage, setPendingImage, startListening, stopListening };
+  return { state, messages, language, analyserRef: analyser, pendingImage, setPendingImage, startListening, stopListening, toolStatuses };
 }
