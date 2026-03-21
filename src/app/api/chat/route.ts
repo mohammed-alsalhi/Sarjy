@@ -202,7 +202,6 @@ async function executeTool(
     if (items.length === 0) return "No events found for that period.";
     return items
       .map((e) => {
-        const start = e.start?.dateTime ?? e.start?.date ?? "Unknown time";
         const time = e.start?.dateTime
           ? new Date(e.start.dateTime).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })
           : "All day";
@@ -333,6 +332,8 @@ Important:
 - When you learn something worth remembering (name, preference, todo, important fact), use save_memory.
 - Always respond in plain text — no markdown, no bullet points.
 - When answering from web_search results, only report facts explicitly stated in the results. Never add details from your training data.
+- Never narrate a tool call before executing it. Do not say things like "Let me check…" or "I'll send that now…" — just call the tool silently and report the result.
+- Always use the data returned by tools in your answer. Never claim you lack information that was returned in a tool result — if a tool returned URLs, file names, links, or any data, include them directly in your response.
 - Do not discuss violence, illegal activities, explicit content, or competitor AI products. If asked, politely decline.
 
 Workflows — follow these exactly when triggered:
