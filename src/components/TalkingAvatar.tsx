@@ -49,7 +49,7 @@ export function TalkingAvatar({ state, onStartListening, onStopListening, analys
   const rightEyeRef = useRef<SVGEllipseElement>(null);
 
   const animFrameRef = useRef<number>(0);
-  const dataArrayRef = useRef<Uint8Array | null>(null);
+  const dataArrayRef = useRef<Uint8Array<ArrayBuffer> | null>(null);
   const blinkTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // --- Mouth animation (rAF → direct DOM) ---
@@ -64,7 +64,7 @@ export function TalkingAvatar({ state, onStartListening, onStopListening, analys
       const analyser = analyserRef?.current;
       if (analyser) {
         if (!dataArrayRef.current || dataArrayRef.current.length !== analyser.frequencyBinCount) {
-          dataArrayRef.current = new Uint8Array(analyser.frequencyBinCount);
+          dataArrayRef.current = new Uint8Array(analyser.frequencyBinCount) as Uint8Array<ArrayBuffer>;
         }
         analyser.getByteFrequencyData(dataArrayRef.current);
 
