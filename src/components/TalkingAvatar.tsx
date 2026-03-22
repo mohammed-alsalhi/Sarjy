@@ -191,9 +191,10 @@ export function TalkingAvatar({ state, onStartListening, onStopListening, analys
               width={SIZE}
               height={SIZE}
               xmlns="http://www.w3.org/2000/svg"
+              style={{ color: "hsl(var(--card-foreground))" }}
             >
               {/* Face */}
-              <circle cx={CX} cy={CY} r={FACE_R} fill="var(--card)" stroke="var(--border)" strokeWidth="1.5" />
+              <circle cx={CX} cy={CY} r={FACE_R} fill="hsl(var(--muted))" stroke="hsl(var(--border))" strokeWidth="1.5" />
 
               {/* Eyebrows — lift when listening */}
               <motion.line
@@ -222,7 +223,7 @@ export function TalkingAvatar({ state, onStartListening, onStopListening, analys
               {/* Left pupil highlight */}
               <circle
                 cx={EYE_L_X + pupilDx + 1.8} cy={EYE_Y + pupilDy - 1.8}
-                r={1.4} fill="var(--card)" opacity={0.55}
+                r={1.4} fill="hsl(var(--muted))" opacity={0.7}
                 style={{ transition: "cx 0.3s ease, cy 0.3s ease" }}
               />
 
@@ -237,7 +238,7 @@ export function TalkingAvatar({ state, onStartListening, onStopListening, analys
               {/* Right pupil highlight */}
               <circle
                 cx={EYE_R_X + pupilDx + 1.8} cy={EYE_Y + pupilDy - 1.8}
-                r={1.4} fill="var(--card)" opacity={0.55}
+                r={1.4} fill="hsl(var(--muted))" opacity={0.7}
                 style={{ transition: "cx 0.3s ease, cy 0.3s ease" }}
               />
 
